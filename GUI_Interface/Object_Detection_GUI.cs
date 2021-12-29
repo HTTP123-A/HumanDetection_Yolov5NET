@@ -15,6 +15,7 @@ namespace GUI_Interface
     public partial class Object_Detection_GUI : Form
     {
         string Directory;
+        int person_count = 0;
 
         public Object_Detection_GUI()
         {
@@ -37,6 +38,12 @@ namespace GUI_Interface
 
         private void btn_Detect_Click(object sender, EventArgs e)
         {
+            Detect();
+        }
+        #endregion
+
+        private void Detect() //Hàm detect object
+        {
             var image = Image.FromFile(Directory);
             var scorer = new YoloScorer<YoloCocoP5Model>("Assets/Weights/yolov5n.onnx");
 
@@ -52,18 +59,18 @@ namespace GUI_Interface
 
                 var (x, y) = (prediction.Rectangle.X - 3, prediction.Rectangle.Y - 23);
 
-                /*if (prediction.Label.Name.ToString() == "person")
+                if (prediction.Label.Name.ToString() == "person")
                 {
-                    count++;
-                }*/
+                    person_count++;
+                }
                 //Console.WriteLine(count + "persons");
                 graphics.DrawString($"{prediction.Label.Name} ({score})",
                     new Font("Consolas", 16, GraphicsUnit.Pixel), new SolidBrush(prediction.Label.Color),
                     new PointF(x, y));
             }
+            textBox_PersonCount.Text = person_count.ToString();
             pictureBox_Image2Detect.Image = image;
             image.Save("Assets/result1.jpg");
         }
-        #endregion
     }
 }
