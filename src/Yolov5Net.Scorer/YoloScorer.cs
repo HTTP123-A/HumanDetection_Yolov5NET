@@ -23,6 +23,7 @@ namespace Yolov5Net.Scorer
 
         private readonly InferenceSession _inferenceSession;
 
+        #region Outputs value between 0 and 1 : float Sigmoid(float value)
         /// <summary>
         /// Outputs value between 0 and 1.
         /// </summary>
@@ -30,7 +31,9 @@ namespace Yolov5Net.Scorer
         {
             return 1 / (1 + (float)Math.Exp(-value));
         }
+        #endregion
 
+        #region Converts xywh bbox format to xyxy : float[] Xywh2xyxy(float[] source)
         /// <summary>
         /// Converts xywh bbox format to xyxy.
         /// </summary>
@@ -45,7 +48,9 @@ namespace Yolov5Net.Scorer
 
             return result;
         }
+        #endregion
 
+        #region Returns value clamped to the inclusive range of min and max : float Clamp(float value, float min, float max)
         /// <summary>
         /// Returns value clamped to the inclusive range of min and max.
         /// </summary>
@@ -53,7 +58,9 @@ namespace Yolov5Net.Scorer
         {
             return (value < min) ? min : (value > max) ? max : value;
         }
+        #endregion
 
+        #region Resizes image keeping ratio to fit model input size : Bitmap ResizeImage(Image image)
         /// <summary>
         /// Resizes image keeping ratio to fit model input size.
         /// </summary>
@@ -83,7 +90,9 @@ namespace Yolov5Net.Scorer
 
             return output;
         }
+        #endregion
 
+        #region Extracts pixels into tensor for net input: Tensor<float> ExtractPixels(Image image)
         /// <summary>
         /// Extracts pixels into tensor for net input.
         /// </summary>
@@ -116,7 +125,9 @@ namespace Yolov5Net.Scorer
 
             return tensor;
         }
+        #endregion
 
+        #region Runs inference session : DenseTensor<float>[] Inference(Image image)
         /// <summary>
         /// Runs inference session.
         /// </summary>
@@ -145,7 +156,9 @@ namespace Yolov5Net.Scorer
 
             return output.ToArray();
         }
+        #endregion
 
+        #region Parses net output (detect) to predictions : List<YoloPrediction> ParseDetect(DenseTensor<float> output, Image image)
         /// <summary>
         /// Parses net output (detect) to predictions.
         /// </summary>
@@ -195,7 +208,9 @@ namespace Yolov5Net.Scorer
 
             return result.ToList();
         }
+        #endregion
 
+        #region Parses net outputs (sigmoid) to predictions : List<YoloPrediction> ParseSigmoid(DenseTensor<float>[] output, Image image)
         /// <summary>
         /// Parses net outputs (sigmoid) to predictions.
         /// </summary>
@@ -259,7 +274,9 @@ namespace Yolov5Net.Scorer
 
             return result.ToList();
         }
+        #endregion
 
+        #region Parses net outputs (sigmoid or detect layer) to predictions : List<YoloPrediction> ParseOutput(DenseTensor<float>[] output, Image image)
         /// <summary>
         /// Parses net outputs (sigmoid or detect layer) to predictions.
         /// </summary>
@@ -267,7 +284,9 @@ namespace Yolov5Net.Scorer
         {
             return _model.UseDetect ? ParseDetect(output[0], image) : ParseSigmoid(output, image);
         }
+        #endregion
 
+        #region Removes overlaped duplicates (nms) : List<YoloPrediction> Supress(List<YoloPrediction> items)
         /// <summary>
         /// Removes overlaped duplicates (nms).
         /// </summary>
@@ -301,7 +320,9 @@ namespace Yolov5Net.Scorer
 
             return result;
         }
+        #endregion
 
+        #region Runs object detection : ist<YoloPrediction> Predict(Image image)
         /// <summary>
         /// Runs object detection.
         /// </summary>
@@ -309,7 +330,9 @@ namespace Yolov5Net.Scorer
         {
             return Supress(ParseOutput(Inference(image), image));
         }
+        #endregion
 
+        #region Creates new instance of YoloScorer : YoloScorer()
         /// <summary>
         /// Creates new instance of YoloScorer.
         /// </summary>
@@ -317,7 +340,9 @@ namespace Yolov5Net.Scorer
         {
             _model = Activator.CreateInstance<T>();
         }
+        #endregion
 
+        #region Creates new instance of YoloScorer with weights path and options : YoloScorer(string weights, SessionOptions opts = null) : this()
         /// <summary>
         /// Creates new instance of YoloScorer with weights path and options.
         /// </summary>
@@ -325,7 +350,9 @@ namespace Yolov5Net.Scorer
         {
             _inferenceSession = new InferenceSession(File.ReadAllBytes(weights), opts ?? new SessionOptions());
         }
+        #endregion
 
+        #region Creates new instance of YoloScorer with weights stream and options : YoloScorer(Stream weights, SessionOptions opts = null) : this()
         /// <summary>
         /// Creates new instance of YoloScorer with weights stream and options.
         /// </summary>
@@ -336,7 +363,9 @@ namespace Yolov5Net.Scorer
                 _inferenceSession = new InferenceSession(reader.ReadBytes((int)weights.Length), opts ?? new SessionOptions());
             }
         }
+        #endregion
 
+        #region Creates new instance of YoloScorer with weights bytes and options : YoloScorer(byte[] weights, SessionOptions opts = null) : this()
         /// <summary>
         /// Creates new instance of YoloScorer with weights bytes and options.
         /// </summary>
@@ -344,7 +373,9 @@ namespace Yolov5Net.Scorer
         {
             _inferenceSession = new InferenceSession(weights, opts ?? new SessionOptions());
         }
+        #endregion
 
+        #region Disposes YoloScorer instance : void Dispose()
         /// <summary>
         /// Disposes YoloScorer instance.
         /// </summary>
@@ -352,5 +383,6 @@ namespace Yolov5Net.Scorer
         {
             _inferenceSession.Dispose();
         }
+        #endregion
     }
 }
