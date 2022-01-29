@@ -100,8 +100,8 @@ namespace GUI_Interface
                 }
                 else empty_count = 0;
 
-                if (empty_count < 5) light = true;
-                else light = false;
+                if ((empty_count == 5) && (person_count == 0)) light = false;
+                else light = true;
                 Console.WriteLine("LIGHT STATUS: " + light);
             }
             
