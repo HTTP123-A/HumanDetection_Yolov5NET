@@ -30,11 +30,13 @@ namespace GUI_Interface
         int empty_count = 0;
         bool cam_sel = false;
         bool light = false;
+        
 
         public Object_Detection_GUI()
         {
             InitializeComponent();
-            
+            this.cb_OFF.Checked = true;
+            this.cb_ON.Checked = false;
         }
 
         private void Object_Detection_GUI_Load(object sender, EventArgs e)
@@ -92,7 +94,7 @@ namespace GUI_Interface
             {
                 Image_From_Cam = (Image)Raw_Image.Clone();
                 Detect();
-                Console.WriteLine(person_count + "persons");
+                Console.WriteLine(person_count + " person");
                 if (person_count == 0)
                 {
                     if (empty_count == 5) empty_count = 5;
@@ -100,8 +102,8 @@ namespace GUI_Interface
                 }
                 else empty_count = 0;
 
-                if ((empty_count == 5) && (person_count == 0)) light = false;
-                else light = true;
+                if ((empty_count == 5) && (person_count == 0)) { light = false; this.cb_OFF.Checked = true; this.cb_ON.Checked = false; }
+                else { light = true; this.cb_OFF.Checked = false; this.cb_ON.Checked = true; }
                 Console.WriteLine("LIGHT STATUS: " + light);
             }
             
