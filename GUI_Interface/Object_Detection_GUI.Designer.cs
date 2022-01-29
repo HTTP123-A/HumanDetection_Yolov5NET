@@ -30,6 +30,8 @@ namespace GUI_Interface
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.btn_Stop = new System.Windows.Forms.Button();
             this.panel_Cam = new System.Windows.Forms.Panel();
             this.Combo_Camera_Device = new System.Windows.Forms.ComboBox();
             this.btn_Camera = new System.Windows.Forms.Button();
@@ -46,6 +48,7 @@ namespace GUI_Interface
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox_Image2Detect = new System.Windows.Forms.PictureBox();
             this.panel1.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.panel_Cam.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -56,6 +59,7 @@ namespace GUI_Interface
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.panel6);
             this.panel1.Controls.Add(this.panel_Cam);
             this.panel1.Controls.Add(this.panel5);
             this.panel1.Controls.Add(this.panel4);
@@ -65,6 +69,26 @@ namespace GUI_Interface
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(250, 474);
             this.panel1.TabIndex = 0;
+            // 
+            // panel6
+            // 
+            this.panel6.Controls.Add(this.btn_Stop);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel6.Location = new System.Drawing.Point(0, 90);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(250, 30);
+            this.panel6.TabIndex = 5;
+            // 
+            // btn_Stop
+            // 
+            this.btn_Stop.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btn_Stop.Location = new System.Drawing.Point(0, 0);
+            this.btn_Stop.Name = "btn_Stop";
+            this.btn_Stop.Size = new System.Drawing.Size(75, 30);
+            this.btn_Stop.TabIndex = 0;
+            this.btn_Stop.Text = "Stop";
+            this.btn_Stop.UseVisualStyleBackColor = true;
+            this.btn_Stop.Click += new System.EventHandler(this.btn_Stop_Click);
             // 
             // panel_Cam
             // 
@@ -234,6 +258,7 @@ namespace GUI_Interface
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Object_Detection_GUI_FormClosing);
             this.Load += new System.EventHandler(this.Object_Detection_GUI_Load);
             this.panel1.ResumeLayout(false);
+            this.panel6.ResumeLayout(false);
             this.panel_Cam.ResumeLayout(false);
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
@@ -265,5 +290,7 @@ namespace GUI_Interface
         private System.Windows.Forms.Panel panel_Cam;
         private System.Windows.Forms.Button btn_Camera;
         private System.Windows.Forms.ComboBox Combo_Camera_Device;
+        private System.Windows.Forms.Panel panel6;
+        private System.Windows.Forms.Button btn_Stop;
     }
 }
