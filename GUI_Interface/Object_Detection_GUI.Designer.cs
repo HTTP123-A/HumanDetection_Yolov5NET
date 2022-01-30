@@ -29,8 +29,11 @@ namespace GUI_Interface
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel_Stop = new System.Windows.Forms.Panel();
+            this.cb_OFF = new System.Windows.Forms.CheckBox();
+            this.cb_ON = new System.Windows.Forms.CheckBox();
             this.btn_Stop = new System.Windows.Forms.Button();
             this.panel_Cam = new System.Windows.Forms.Panel();
             this.Combo_Camera_Device = new System.Windows.Forms.ComboBox();
@@ -47,8 +50,8 @@ namespace GUI_Interface
             this.btn_LoadImage = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox_Image2Detect = new System.Windows.Forms.PictureBox();
-            this.cb_ON = new System.Windows.Forms.CheckBox();
-            this.cb_OFF = new System.Windows.Forms.CheckBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.serialPort1 = new System.IO.Ports.SerialPort(this.components);
             this.panel1.SuspendLayout();
             this.panel_Stop.SuspendLayout();
             this.panel_Cam.SuspendLayout();
@@ -82,6 +85,26 @@ namespace GUI_Interface
             this.panel_Stop.Name = "panel_Stop";
             this.panel_Stop.Size = new System.Drawing.Size(250, 30);
             this.panel_Stop.TabIndex = 5;
+            // 
+            // cb_OFF
+            // 
+            this.cb_OFF.AutoSize = true;
+            this.cb_OFF.Location = new System.Drawing.Point(169, 7);
+            this.cb_OFF.Name = "cb_OFF";
+            this.cb_OFF.Size = new System.Drawing.Size(80, 17);
+            this.cb_OFF.TabIndex = 2;
+            this.cb_OFF.Text = "TURN OFF";
+            this.cb_OFF.UseVisualStyleBackColor = true;
+            // 
+            // cb_ON
+            // 
+            this.cb_ON.AutoSize = true;
+            this.cb_ON.Location = new System.Drawing.Point(82, 7);
+            this.cb_ON.Name = "cb_ON";
+            this.cb_ON.Size = new System.Drawing.Size(76, 17);
+            this.cb_ON.TabIndex = 1;
+            this.cb_ON.Text = "TURN ON";
+            this.cb_ON.UseVisualStyleBackColor = true;
             // 
             // btn_Stop
             // 
@@ -144,7 +167,6 @@ namespace GUI_Interface
             this.textBox_Status.Font = new System.Drawing.Font("Century Gothic", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox_Status.Location = new System.Drawing.Point(81, 29);
             this.textBox_Status.Name = "textBox_Status";
-            this.textBox_Status.ReadOnly = true;
             this.textBox_Status.Size = new System.Drawing.Size(169, 31);
             this.textBox_Status.TabIndex = 2;
             // 
@@ -168,6 +190,7 @@ namespace GUI_Interface
             this.btn_Connect.TabIndex = 0;
             this.btn_Connect.Text = "Connect!";
             this.btn_Connect.UseVisualStyleBackColor = true;
+            this.btn_Connect.Click += new System.EventHandler(this.btn_Connect_Click);
             // 
             // panel4
             // 
@@ -250,25 +273,11 @@ namespace GUI_Interface
             this.pictureBox_Image2Detect.TabIndex = 0;
             this.pictureBox_Image2Detect.TabStop = false;
             // 
-            // cb_ON
+            // timer1
             // 
-            this.cb_ON.AutoSize = true;
-            this.cb_ON.Location = new System.Drawing.Point(82, 7);
-            this.cb_ON.Name = "cb_ON";
-            this.cb_ON.Size = new System.Drawing.Size(76, 17);
-            this.cb_ON.TabIndex = 1;
-            this.cb_ON.Text = "TURN ON";
-            this.cb_ON.UseVisualStyleBackColor = true;
-            // 
-            // cb_OFF
-            // 
-            this.cb_OFF.AutoSize = true;
-            this.cb_OFF.Location = new System.Drawing.Point(169, 7);
-            this.cb_OFF.Name = "cb_OFF";
-            this.cb_OFF.Size = new System.Drawing.Size(80, 17);
-            this.cb_OFF.TabIndex = 2;
-            this.cb_OFF.Text = "TURN OFF";
-            this.cb_OFF.UseVisualStyleBackColor = true;
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Object_Detection_GUI
             // 
@@ -319,5 +328,7 @@ namespace GUI_Interface
         private System.Windows.Forms.Button btn_Stop;
         private System.Windows.Forms.CheckBox cb_OFF;
         private System.Windows.Forms.CheckBox cb_ON;
+        private System.Windows.Forms.Timer timer1;
+        private System.IO.Ports.SerialPort serialPort1;
     }
 }

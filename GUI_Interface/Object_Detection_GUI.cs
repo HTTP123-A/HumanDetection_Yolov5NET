@@ -13,6 +13,7 @@ using AForge.Video;
 using AForge.Video.DirectShow;
 using System.IO;
 using System.Timers;
+using System.Management;
 
 
 namespace GUI_Interface
@@ -26,6 +27,7 @@ namespace GUI_Interface
         private static System.Timers.Timer Timer_A;
 
         string Directory;
+        string device_ID_toConnect;
         int person_count = 0;
         int empty_count = 0;
         bool cam_sel = false;
@@ -41,6 +43,19 @@ namespace GUI_Interface
 
         private void Object_Detection_GUI_Load(object sender, EventArgs e)
         {
+            device_ID_toConnect = AutoDetect_Arduino();
+            if (device_ID_toConnect != null)
+            {
+                this.textBox_COMstatus.Text = device_ID_toConnect;
+                this.textBox_Status.Text = "Disconnect!";
+                this.textBox_Status.ForeColor = Color.Red;
+            }
+
+            this.btn_LoadImage.Enabled = false;
+            this.btn_Detect.Enabled = false;
+            this.btn_Camera.Enabled = false;
+            this.btn_Stop.Enabled = false;
+
             filter = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             foreach (FilterInfo device_Cam in filter)
                 this.Combo_Camera_Device.Items.Add(device_Cam.Name);
@@ -48,6 +63,7 @@ namespace GUI_Interface
             this.device_Cam = new VideoCaptureDevice();
             Timer_A = new System.Timers.Timer();
             Timer_A.Interval = 1000;
+
         }
 
         #region Button Controls
@@ -74,6 +90,9 @@ namespace GUI_Interface
         
         private void btn_Camera_Click(object sender, EventArgs e)
         {
+            this.btn_Stop.Enabled = true;
+            this.btn_Camera.Enabled = false;
+
             Timer_A.Elapsed += One_Second;
             Timer_A.AutoReset = true;
             Timer_A.Enabled = true;
@@ -95,6 +114,7 @@ namespace GUI_Interface
                 Image_From_Cam = (Image)Raw_Image.Clone();
                 Detect();
                 Console.WriteLine(person_count + " person");
+
                 if (person_count == 0)
                 {
                     if (empty_count == 5) empty_count = 5;
@@ -102,8 +122,9 @@ namespace GUI_Interface
                 }
                 else empty_count = 0;
 
-                if ((empty_count == 5) && (person_count == 0)) { light = false; this.cb_OFF.Checked = true; this.cb_ON.Checked = false; }
-                else { light = true; this.cb_OFF.Checked = false; this.cb_ON.Checked = true; }
+                if (light == true) serialPort1.Write("1");
+                else serialPort1.Write("0");
+
                 Console.WriteLine("LIGHT STATUS: " + light);
             }
             
@@ -116,7 +137,10 @@ namespace GUI_Interface
         {
             if (Raw_Image != null) Raw_Image.Dispose();
             Raw_Image = (Image)eventArgs.Frame.Clone();
-            this.pictureBox_Image2Detect.Image = Raw_Image;                      
+            this.pictureBox_Image2Detect.Image = Raw_Image;
+
+            if ((empty_count == 5) && (person_count == 0)) { light = false; this.cb_OFF.Checked = true; this.cb_ON.Checked = false; }
+            else { light = true; this.cb_OFF.Checked = false; this.cb_ON.Checked = true; }
         }
 
         private void btn_Stop_Click(object sender, EventArgs e)
@@ -127,6 +151,25 @@ namespace GUI_Interface
             if (Image_From_Cam != null) Image_From_Cam.Dispose();
             cam_sel = false;
             Timer_A.Enabled = false;
+        }
+
+        private void btn_Connect_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!serialPort1.IsOpen)
+                {
+                    serialPort1.PortName = device_ID_toConnect;
+                    serialPort1.Open();
+                    this.btn_LoadImage.Enabled = true;
+                    this.btn_Detect.Enabled = true;
+                    this.btn_Camera.Enabled = true;
+                }
+            }
+            catch(Exception exc)
+            {
+                MessageBox.Show(exc.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         #endregion
 
@@ -181,10 +224,56 @@ namespace GUI_Interface
         }
         #endregion
 
+        private string AutoDetect_Arduino()
+        {
+            ManagementScope connectionScope = new ManagementScope();
+            SelectQuery serialQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(connectionScope, serialQuery);
+
+            try
+            {
+                foreach(ManagementObject item in searcher.Get())
+                {
+                    string desc = item["Description"].ToString();
+                    string deviceId = item["DeviceID"].ToString();
+
+                    if (desc.Contains("Arduino"))
+                        return deviceId;
+                }
+            }
+            catch(ManagementException ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return null;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (!serialPort1.IsOpen)
+            {
+                this.textBox_Status.Text = "Disconnect!";
+                this.textBox_Status.ForeColor = Color.Red;
+            }
+            else
+            {
+                this.textBox_Status.Text = "Connect!";
+                this.textBox_Status.ForeColor = Color.Green;
+            }
+        }
+
         private void Object_Detection_GUI_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (this.device_Cam.IsRunning)
                 this.device_Cam.Stop();
-        }        
+            if (serialPort1.IsOpen)
+            {
+                serialPort1.Write("0");
+                serialPort1.Close();
+            }
+        }
+
+        
     }
 }
