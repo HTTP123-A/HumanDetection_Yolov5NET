@@ -151,7 +151,14 @@ namespace GUI_Interface
             if (Image_From_Cam != null) Image_From_Cam.Dispose();
             cam_sel = false;
             Timer_A.Enabled = false;
+
+            if (serialPort1.IsOpen)
+            {
+                serialPort1.Write("0");
+                serialPort1.Close();
+            }
         }
+    
 
         private void btn_Connect_Click(object sender, EventArgs e)
         {
@@ -176,6 +183,20 @@ namespace GUI_Interface
         private void btn_Detect_Click(object sender, EventArgs e)
         {            
             Detect();
+            if (person_count != 0)
+            {
+                light = true;
+                serialPort1.Write("1");
+                this.cb_ON.Checked = true;
+                this.cb_OFF.Checked = false;
+            }
+            else
+            {
+                light = false;
+                serialPort1.Write("0");
+                this.cb_ON.Checked = false;
+                this.cb_OFF.Checked = true;
+            }
         }
         #endregion
 
